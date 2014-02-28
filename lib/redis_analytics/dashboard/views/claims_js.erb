@@ -1,0 +1,71 @@
+<script type="text/javascript" language="text/javascript">
+    function fetchData(range, unit_count, unit, dimension) {
+        if (dimension == undefined) {
+            dimension = 'global'
+        }
+
+        var data = {
+            "dimension": dimension,
+            "unit_count": unit_count,
+            "unit": unit
+        }
+
+
+        // both time range graphs powered by time range data
+        $.ajax({
+            url: '<%=Rack::RedisAnalytics.claim_api_endpoint %>' + '/index',
+            dataType: "json",
+            success: function(response) {
+                claims_area.setData(response);
+            },
+            data: data
+
+        });
+        $.ajax({
+            url: '<%=Rack::RedisAnalytics.claim_api_endpoint %>' + '/objects',
+            dataType: "json",
+            success: function(response) {
+                claims_objects.setData(response);
+            },
+            data: data
+
+        });
+    }
+
+    function changeTimeFrame(range)
+    {
+//        var mapObject = $('#world-map').vectorMap('get', 'mapObject');
+        switch(range)
+        {
+                <% Rack::RedisAnalytics.time_range_formats.each do |range, unit, time_format| %>
+            case '<%=range%>':
+                setSessionCookie("_rarng", "<%=range%>");
+                fetchData("<%=range%>", <%= (1.send(range)/1.send(unit)).round %>, "<%= unit %>", $('#dimensions').val());
+
+                break;
+                <% end %>
+        }
+    }
+
+
+    function setSessionCookie(name,value) {
+        document.cookie = name+"="+value+"; path=/";
+    }
+
+    function convertToCSV(objArray) {
+        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        var str = '';
+        for (var i = 0; i < array.length; i++) {
+            var line = '';
+            for (var index in array[i]) {
+                if (line != '') line += ','
+                line += array[i][index];
+            }
+            str += line + '\r\n';
+        }
+        return str;
+    };
+
+
+
+</script>

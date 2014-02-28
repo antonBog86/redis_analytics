@@ -1,19 +1,24 @@
 <!-- start header -->
 <div class="navbar">
   <div class="navbar-inner">
-    <a class="brand" href="http://www.github.com/saturnine/redis_analytics">Redis Analytics</a>
+    <a class="brand" href="/admin/dashboard">Вернутся к админ панели</a>
     <ul class="nav nav-pills pull-right">
       <li>
         <div class="btn-group" data-toggle="buttons-radio">
-          <a href="visits" class="btn btn-small <%=' active' if request.path.end_with?('/visits') %>">Visits</a>
-          <a href="activity" class="btn btn-small <%=' active' if request.path.end_with?('/activity') %>">Activity</a>
-          <button type="button" class="btn btn-small" onclick='javascript:visits_area.grid=true'>Transactions</button>
+          <a href="visits" class="btn btn-small <%=' active' if request.path.end_with?('/visits') %>">Посещения</a>
+          <a href="activity" class="btn btn-small <%=' active' if request.path.end_with?('/activity') %>">Жалобы</a>
+          <!--<button type="button" class="btn btn-small" onclick='javascript:visits_area.grid=true'>Transactions</button>-->
         </div>
         <div class="btn-group" data-toggle="buttons-radio" id="timeRange">
         <% Rack::RedisAnalytics.time_range_formats.map{|x| x[0]}.each do |range| %>
 	  <button type="button" class="btn btn-small <%="active" if @range == range%>" onclick='changeTimeFrame("<%=range.to_s%>")'><%=range.to_s%></button>
         <% end %>
         </div>
+        <select id="dimensions">
+          <% Rack::RedisAnalytics.existed_dimensions.each do |d| %>
+          <option value="<%= d %>"><%= d %></option>
+          <% end %>
+        </select>
       </li>
     </ul>
   </div>
